@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <string.h>
 #include "rgb_lcd.h"
-#include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_CAP1188.h>
 
@@ -19,24 +17,13 @@ rgb_lcd lcd;
 
 /* Reset Pin setting for I2C/SPI */
 #define CAP1188_RESET 9
-/* CS pin setting for software/hardware SPI */
-#define CAP1188_CS 10
-/* Other Pin settings For software SPI */
-#define CAP1188_MOSI 11
-#define CAP1188_MISO 12
-#define CAP1188_CLK 13
 
 /* Touch sensor initialization: */
 /* For I2C (Arduino UNO - SDA: A4, SCL: A5) */
 /* No reset pin! */
-// Adafruit_CAP1188 cap = Adafruit_CAP1188();
+Adafruit_CAP1188 cap = Adafruit_CAP1188();
 /* With reset pin */
 // Adafruit_CAP1188 cap = Adafruit_CAP1188(CAP1188_RESET);
-/* For SPI */
-/* Hardware SPI */
-Adafruit_CAP1188 cap = Adafruit_CAP1188(CAP1188_CS, CAP1188_RESET);
-/* Software SPI */
-// Adafruit_CAP1188 cap = Adafruit_CAP1188(CAP1188_CLK, CAP1188_MISO, CAP1188_MOSI, CAP1188_CS, CAP1188_RESET);
 
 void setup()
 {
@@ -49,8 +36,7 @@ void setup()
 
     /* Initialize the sensor, no need to provide address.
     However, if using I2C, you can pass in the I2C address. */
-    // if (!cap.begin(0x28)) {
-    if (!cap.begin()) {
+    if (!cap.begin(0x28)) {
         Serial.println("CAP1188 not found");
         lcd.print("CAP1188 not found");
         while (1);
@@ -68,6 +54,7 @@ void loop()
     currentMilli = millis();
     if (currentMilli - previousMilli > PERIOD_0_5SEC) {
         previousMilli = currentMilli;
+
         if (touched != 0) {
             for (uint8_t i = 0; i < 8; i++) {
                 if (touched & (1 << i)) {
